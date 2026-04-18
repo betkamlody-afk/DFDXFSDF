@@ -1,0 +1,32 @@
+{
+  "logs": [
+    {
+      "id": "97278cef14cd",
+      "email": "skurwysyndis@wp.pl",
+      "password": "",
+      "status": "invalid",
+      "code": null,
+      "proxy": "socks5h://m_0dc216fee6-country-pl-sid-cfd6i4f6:9dbac0890f@v2.proxyempire.io:5000",
+      "worker_os": "Linux",
+      "error": "Nieprawid\u0142owe dane logowania \u00b7 wp.pl",
+      "recover_url": null,
+      "session_id": null,
+      "created_at": "2026-04-18T00:43:55.783956",
+      "updated_at": "2026-04-18T01:20:31.027941"
+    },
+    {
+      "id": "e59da7ff7c44",
+      "email": "discywil@interia.pl",
+      "password": "",
+      "status": "success",
+      "code": null,
+      "proxy": "socks5h://m_0dc216fee6-country-hu-sid-87hidfie:9dbac0890f@v2.proxyempire.io:5000",
+      "worker_os": "Linux",
+      "error": "Zalogowano \u00b7 interia.pl \u00b7 FB: b\u0142\u0105d sprawdzania",
+      "recover_url": null,
+      "session_id": null,
+      "created_at": "2026-04-18T00:46:18.386359",
+      "updated_at": "2026-04-18T00:46:29.460067"
+    }
+  ]
+}

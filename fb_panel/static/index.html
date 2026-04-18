@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FB Panel — Kwasny Checker Pro</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- AUTH SCREEN — Login Page (Kvents-style)                   -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="auth-screen" class="screen auth-screen">
+        <!-- Animated background glows -->
+        <div class="auth-bg">
+            <div class="auth-glow auth-glow-1"></div>
+            <div class="auth-glow auth-glow-2"></div>
+            <div class="auth-glow auth-glow-3"></div>
+        </div>
+
+        <div class="auth-card">
+            <div class="auth-card-inner">
+                <!-- Lock icon -->
+                <div class="auth-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </div>
+
+                <h1 class="auth-title">Kwaśny <span>FB Panel</span></h1>
+                <p class="auth-subtitle">Zaloguj się kluczem autoryzacyjnym</p>
+
+                <!-- Key input -->
+                <div class="auth-field">
+                    <label class="auth-label">Klucz Autoryzacyjny</label>
+                    <input 
+                        type="text" 
+                        id="auth-key" 
+                        class="auth-input"
+                        placeholder="XXXX-XXXX-XXXX-XXXX"
+                        maxlength="19"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                </div>
+
+                <p class="auth-hint">Wpisz swój klucz autoryzacyjny lub wygeneruj nowy aby uzyskać dostęp do panelu.</p>
+
+                <!-- Buttons -->
+                <button id="btn-authorize" class="auth-btn auth-btn-primary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    Autoryzuj Kluczem
+                </button>
+                <button id="btn-generate" class="auth-btn auth-btn-secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                    Generuj Nowy Klucz
+                </button>
+
+                <!-- Status message -->
+                <div id="auth-message" class="auth-message hidden"></div>
+
+                <div class="auth-status-bar">
+                    <span class="auth-status-dot"></span>
+                    <span id="auth-status">Oczekiwanie na autoryzację</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- LOGOUT OVERLAY — animation                                -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="logout-overlay" class="logout-overlay hidden">
+        <div class="logout-spinner"></div>
+        <p>Wylogowywanie...</p>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- DASHBOARD — App Shell with Sidebar + Pages                -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="dashboard" class="screen hidden">
+        <!-- Left Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div class="sidebar-brand-text">
+                    <span class="sidebar-brand-name">FB Panel</span>
+                    <span class="sidebar-brand-ver">v2.0</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-page="home">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span>Główna</span>
+                </button>
+                <button class="nav-item" data-page="proxy">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>Proxy</span>
+                </button>
+                <button class="nav-item" data-page="logs">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <span>Logi</span>
+                </button>
+                <button class="nav-item" data-page="sessions">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    <span>Sesje</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-status">
+                    <span class="ws-status" id="ws-status">● Połączono</span>
+                </div>
+                <button id="btn-logout" class="nav-item nav-logout">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <span>Wyloguj się</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="app-main">
+            <!-- Top Bar -->
+            <header class="app-topbar">
+                <div class="topbar-left">
+                    <h2 class="page-title" id="page-title">Główna</h2>
+                </div>
+                <div class="topbar-right">
+                    <span id="engine-status" class="engine-badge">⏸ Zatrzymany</span>
+                    <button id="btn-stop" class="topbar-btn topbar-btn-danger">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+                        Zatrzymaj
+                    </button>
+                </div>
+            </header>
+
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- PAGE: GŁÓWNA (Home / Dashboard)                    -->
+            <!-- ═══════════════════════════════════════════════════ -->
+            <div id="page-home" class="page active">
+                <!-- Stats Cards Row -->
+                <div class="stats-row">
+                    <div class="stat-card stat-card-success">
+                        <div class="stat-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <div class="stat-card-info">
+                            <span class="stat-card-value" id="stat-success">0</span>
+                            <span class="stat-card-label">Zalogowane</span>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card-warning">
+                        <div class="stat-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </div>
+                        <div class="stat-card-info">
+                            <span class="stat-card-value" id="stat-checkpoint">0</span>
+                            <span class="stat-card-label">Checkpoint</span>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card-error">
+                        <div class="stat-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                        </div>
+                        <div class="stat-card-info">
+                            <span class="stat-card-value" id="stat-invalid">0</span>
+                            <span class="stat-card-label">Invalid / 2FA</span>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card-info">
+                        <div class="stat-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        </div>
+                        <div class="stat-card-info">
+                            <span class="stat-card-value" id="stat-errors">0</span>
+                            <span class="stat-card-label">Błędy</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Home Grid -->
+                <div class="home-grid">
+                    <!-- Engine Control + Quick Stats -->
+                    <div class="card home-engine">
+                        <div class="card-header">
+                            <h3>Silnik</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="engine-controls">
+                                <button id="btn-start" class="btn-engine-start">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                    Rozpocznij sprawdzanie
+                                </button>
+                            </div>
+                            <div class="quick-stats-grid">
+                                <div class="qs-item">
+                                    <span class="qs-value" id="qs-proxy">0</span>
+                                    <span class="qs-label">Proxy aktywne</span>
+                                </div>
+                                <div class="qs-item">
+                                    <span class="qs-value" id="qs-proxy-valid">0</span>
+                                    <span class="qs-label">Proxy zwalidowane</span>
+                                </div>
+                                <div class="qs-item">
+                                    <span class="qs-value" id="qs-queue">0</span>
+                                    <span class="qs-label">Logi w kolejce</span>
+                                </div>
+                                <div class="qs-item">
+                                    <span class="qs-value qs-highlight" id="qs-codes">0</span>
+                                    <span class="qs-label">Kody znalezione</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings -->
+                    <div class="card home-settings">
+                        <div class="card-header">
+                            <h3>Ustawienia</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="setting-row">
+                                <label>Workerzy</label>
+                                <div class="setting-control">
+                                    <input type="range" id="concurrency" min="1" max="10" value="3">
+                                    <span class="range-val" id="concurrency-value">3</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Workers Table -->
+                    <div class="card home-workers">
+                        <div class="card-header">
+                            <h3>Workerzy</h3>
+                            <span class="card-badge" id="workers-active">0</span>
+                        </div>
+                        <div class="card-body card-body-scroll">
+                            <div id="workers-list" class="workers-list">
+                                <div class="empty-state">
+                                    <span>Brak aktywnych workerów</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results / Logs Preview -->
+                    <div class="card home-results">
+                        <div class="card-header">
+                            <h3>Wyniki</h3>
+                            <div class="filter-group">
+                                <button class="filter-btn active" data-filter="all">Wszystkie</button>
+                                <button class="filter-btn" data-filter="success">Sukces</button>
+                                <button class="filter-btn" data-filter="processing">W trakcie</button>
+                                <button class="filter-btn" data-filter="error">Błędy</button>
+                            </div>
+                        </div>
+                        <div class="card-body card-body-scroll">
+                            <div id="logs-list" class="logs-list">
+                                <div class="empty-state">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                                    <p>Brak wyników</p>
+                                    <p class="empty-hint">Załaduj logi i kliknij START</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button id="btn-export" class="btn-export-sm">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Eksportuj
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- PAGE: PROXY                                        -->
+            <!-- ═══════════════════════════════════════════════════ -->
+            <div id="page-proxy" class="page">
+                <!-- Proxy Summary Cards -->
+                <div class="stats-row">
+                    <div class="stat-card stat-card-info">
+                        <div class="stat-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <div class="stat-card-info">
+                            <span class="stat-card-value" id="proxy-count">0</span>
+                            <span class="stat-card-label">Proxy razem</span>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card-success">
+                        <div class="stat-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <div class="stat-card-info">
+                            <span class="stat-card-value" id="proxy-valid-count">0</span>
+                            <span class="stat-card-label">Zwalidowane</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="proxy-layout">
+                    <!-- Proxy Input Panel -->
+                    <div class="card proxy-input-card">
+                        <div class="card-header">
+                            <h3>Dodaj Proxy</h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- Proxy Type Selector -->
+                            <div class="proxy-type-selector">
+                                <label class="field-label">Typ Proxy</label>
+                                <div class="proxy-type-btns">
+                                    <button class="proxy-type-btn active" data-type="SOCKS5" translate="no">SOCKS5</button>
+                                    <button class="proxy-type-btn" data-type="SOCKS4" translate="no">SOCKS4</button>
+                                    <button class="proxy-type-btn" data-type="HTTP" translate="no">HTTP</button>
+                                </div>
+                                <input type="hidden" id="proxy-type" value="SOCKS5">
+                            </div>
+
+                            <div class="field-group">
+                                <label class="field-label">Lista Proxy</label>
+                                <textarea 
+                                    id="proxy-input" 
+                                    class="field-textarea"
+                                    placeholder="Wklej proxy (jeden na linię)&#10;&#10;Format wykrywany automatycznie:&#10;host:port&#10;host:port:user:pass&#10;user:pass@host:port&#10;host:port:pass:user"
+                                    spellcheck="false"
+                                    rows="12"
+                                ></textarea>
+                            </div>
+
+                            <div class="proxy-btn-row">
+                                <button id="btn-load-proxy" class="btn-action btn-action-primary">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    Załaduj
+                                </button>
+                                <button id="btn-validate-proxy" class="btn-action btn-action-secondary">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+                                    Waliduj
+                                </button>
+                            </div>
+
+                            <!-- Validation Progress -->
+                            <div class="proxy-progress-bar" id="proxy-status-bar">
+                                <div class="proxy-progress-fill" id="proxy-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Proxy List Table -->
+                    <div class="card proxy-list-card">
+                        <div class="card-header">
+                            <h3>Lista Proxy</h3>
+                            <div class="card-header-actions">
+                                <button id="btn-clear-proxy" class="btn-action-sm btn-action-danger" title="Wyczyść proxy">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                    Wyczyść
+                                </button>
+                                <span class="card-badge" id="proxy-list-count">0</span>
+                            </div>
+                        </div>
+                        <div class="card-body card-body-scroll">
+                            <div id="proxy-table-container" class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Host</th>
+                                            <th>Port</th>
+                                            <th>Typ</th>
+                                            <th>Lokalizacja</th>
+                                            <th>Status</th>
+                                            <th>Latencja</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="proxy-table-body">
+                                    </tbody>
+                                </table>
+                                <div class="empty-state" id="proxy-empty">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                    <p>Brak proxy</p>
+                                    <p class="empty-hint">Wklej listę proxy i kliknij Załaduj</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- PAGE: LOGI                                         -->
+            <!-- ═══════════════════════════════════════════════════ -->
+            <div id="page-logs" class="page">
+                <!-- Logs Summary Cards -->
+                <div class="stats-row">
+                    <div class="stat-card stat-card-info">
+                        <div class="stat-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        <div class="stat-card-info">
+                            <span class="stat-card-value" id="logs-count">0</span>
+                            <span class="stat-card-label">Logi razem</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logs-layout">
+                    <!-- Logs Input Panel -->
+                    <div class="card logs-input-card">
+                        <div class="card-header">
+                            <h3>Dodaj Logi</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="field-group">
+                                <label class="field-label">Lista Logów (email:hasło)</label>
+                                <textarea 
+                                    id="logs-input" 
+                                    class="field-textarea"
+                                    placeholder="Wklej logi (jeden na linię)&#10;&#10;Format:&#10;email:hasło&#10;user@wp.pl:password123"
+                                    spellcheck="false"
+                                    rows="14"
+                                ></textarea>
+                            </div>
+
+                            <button id="btn-load-logs" class="btn-action btn-action-primary btn-full">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                Załaduj Logi
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Logs List Table -->
+                    <div class="card logs-list-card">
+                        <div class="card-header">
+                            <h3>Lista Logów</h3>
+                            <div class="card-header-actions">
+                                <button id="btn-clear-logs" class="btn-action-sm btn-action-danger" title="Wyczyść wszystkie logi">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                    Wyczyść
+                                </button>
+                                <div class="filter-group filter-group-logs">
+                                    <button class="filter-btn active" data-filter="all">Wszystkie</button>
+                                    <button class="filter-btn" data-filter="success">Sukces</button>
+                                    <button class="filter-btn" data-filter="processing">W trakcie</button>
+                                    <button class="filter-btn" data-filter="error">Błędy</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body card-body-scroll">
+                            <div id="logs-list-page" class="logs-list">
+                                <div class="empty-state">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    <p>Brak logów</p>
+                                    <p class="empty-hint">Wklej logi i kliknij Załaduj</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- PAGE: SESJE (Selenium)                             -->
+            <!-- ═══════════════════════════════════════════════════ -->
+            <div id="page-sessions" class="page">
+                <div class="stats-row">
+                    <div class="stat-card stat-card-info">
+                        <div class="stat-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        </div>
+                        <div class="stat-card-info">
+                            <span class="stat-card-value" id="sessions-count">0</span>
+                            <span class="stat-card-label">Aktywne sesje</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card sessions-card">
+                    <div class="card-header">
+                        <h3>Sesje Selenium</h3>
+                        <p class="card-subtitle">Kliknij na zalogowany log (Sukces) w zakładce Główna, aby otworzyć sesję przeglądarki</p>
+                    </div>
+                    <div class="card-body card-body-scroll">
+                        <div id="sessions-list" class="sessions-grid">
+                            <div class="empty-state">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                                <p>Brak aktywnych sesji</p>
+                                <p class="empty-hint">Otwórz sesję klikając na zalogowany log ze statusem „Sukces"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="app-footer">
+                <span class="footer-badge" id="footer-status">ACTIVE</span>
+                <span class="footer-sep">·</span>
+                <span>FB Panel v2.0</span>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- SESSION VIEW: Full-screen 3-tab panel for a checked account -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="session-view" class="screen hidden">
+        <div class="session-topbar">
+            <div class="session-topbar-left">
+                <button id="btn-back-dashboard" class="btn btn-outline btn-sm">← Powrót</button>
+                <span class="session-email-label" id="sv-email">user@wp.pl</span>
+                <span class="session-status-badge" id="sv-status">● Aktywna</span>
+            </div>
+            <div class="session-topbar-right">
+                <button id="btn-sv-launch-browser" class="btn btn-primary btn-sm hidden">🚀 Odpal przeglądarkę</button>
+                <span class="session-proxy-label">Proxy: <strong id="sv-proxy">—</strong></span>
+                <button id="btn-sv-check-proxy" class="btn btn-secondary btn-sm" title="Sprawdź proxy (IP/geo)">🔍 Check</button>
+                <button id="btn-sv-change-proxy" class="btn btn-secondary btn-sm">🔄 Zmień proxy</button>
+                <button id="btn-sv-close-session" class="btn btn-danger btn-sm">✗ Zamknij sesję</button>
+            </div>
+        </div>
+
+        <div class="session-tabs">
+            <button class="session-tab active" data-tab="email">
+                <span class="tab-icon">📧</span>
+                <span class="tab-label">POCZTA</span>
+                <span class="tab-status" id="sv-tab-email-status">●</span>
+            </button>
+            <button class="session-tab" data-tab="facebook">
+                <span class="tab-icon">📘</span>
+                <span class="tab-label">FACEBOOK</span>
+                <span class="tab-status" id="sv-tab-fb-status">●</span>
+            </button>
+            <button class="session-tab" data-tab="panel">
+                <span class="tab-icon">⚙️</span>
+                <span class="tab-label">PANEL KONTA</span>
+                <span class="tab-status" id="sv-tab-panel-status">●</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: EMAIL -->
+        <div class="session-tab-content active" id="tab-email">
+            <div class="tab-email-layout">
+                <div class="email-sidebar glass">
+                    <div class="email-header">
+                        <div class="email-provider-icon" id="sv-email-provider-icon">📧</div>
+                        <div class="email-provider-info">
+                            <h3 id="sv-email-addr">user@wp.pl</h3>
+                            <span class="email-provider-name" id="sv-email-provider">WP Poczta</span>
+                        </div>
+                    </div>
+                    <div class="email-stats">
+                        <div class="email-stat">
+                            <span class="es-label">Status</span>
+                            <span class="es-value status-ok" id="sv-email-login-status">✓ Zalogowano</span>
+                        </div>
+                        <div class="email-stat">
+                            <span class="es-label">Wiadomości</span>
+                            <span class="es-value" id="sv-email-inbox">0</span>
+                        </div>
+                        <div class="email-stat">
+                            <span class="es-label">Kod FB</span>
+                            <span class="es-value highlight" id="sv-email-code">—</span>
+                        </div>
+                    </div>
+                    <div class="email-actions">
+                        <button class="btn btn-primary" id="btn-sv-login-email">🔑 Zaloguj do poczty</button>
+                        <button class="btn btn-module" id="btn-sv-refresh-inbox">🔄 Odśwież skrzynkę</button>
+                        <button class="btn btn-module" id="btn-sv-search-code">🔍 Szukaj kodu FB</button>
+                    </div>
+                </div>
+                <div class="browser-screenshot glass">
+                    <div class="screenshot-header">
+                        <span>📷 Podgląd przeglądarki — Poczta</span>
+                        <button class="btn btn-outline btn-sm" id="btn-sv-refresh-email-tab">🔄</button>
+                    </div>
+                    <div class="screenshot-body">
+                        <img id="sv-screenshot-email" class="screenshot-img" alt="Email browser">
+                        <div class="screenshot-placeholder" id="sv-placeholder-email">
+                            <span class="placeholder-icon">📧</span>
+                            <span>Kliknij „🔑 Zaloguj do poczty" aby rozpocząć</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: FACEBOOK -->
+        <div class="session-tab-content" id="tab-facebook">
+            <div class="tab-fb-layout">
+                <div class="fb-status-panel glass">
+                    <div class="fb-header">
+                        <div class="fb-logo">📘</div>
+                        <h3>Facebook — Reset hasła</h3>
+                    </div>
+                    <div class="fb-flow">
+                        <div class="fb-step completed"><span class="step-num">1</span><span class="step-text">Otwarto stronę resetowania</span><span class="step-icon">✓</span></div>
+                        <div class="fb-step completed"><span class="step-num">2</span><span class="step-text">Wpisano email konta</span><span class="step-icon">✓</span></div>
+                        <div class="fb-step completed"><span class="step-num">3</span><span class="step-text">Wysłano kod na email</span><span class="step-icon">✓</span></div>
+                        <div class="fb-step active" id="sv-fb-step4"><span class="step-num">4</span><span class="step-text">Oczekiwanie na kod z poczty</span><span class="step-icon">◌</span></div>
+                        <div class="fb-step" id="sv-fb-step5"><span class="step-num">5</span><span class="step-text">Wpisanie kodu i zmiana hasła</span><span class="step-icon">○</span></div>
+                    </div>
+                    <div class="fb-code-display">
+                        <label>KOD RESETU</label>
+                        <div class="fb-code-value" id="sv-fb-code">--------</div>
+                    </div>
+                    <div class="fb-actions">
+                        <button class="btn btn-primary" id="btn-sv-extract-code">📧 Pobierz kod z poczty</button>
+                        <button class="btn btn-secondary" id="btn-sv-enter-code">✏️ Wpisz kod na FB</button>
+                    </div>
+                </div>
+                <div class="browser-screenshot glass">
+                    <div class="screenshot-header">
+                        <span>📷 Podgląd przeglądarki — Facebook</span>
+                        <button class="btn btn-outline btn-sm" id="btn-sv-refresh-fb-tab">🔄</button>
+                    </div>
+                    <div class="screenshot-body">
+                        <img id="sv-screenshot-facebook" class="screenshot-img" alt="Facebook browser">
+                        <div class="screenshot-placeholder" id="sv-placeholder-facebook">
+                            <span class="placeholder-icon">📘</span>
+                            <span>Przeglądarka Facebook uruchamiana...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: PANEL KONTA -->
+        <div class="session-tab-content" id="tab-panel">
+            <div class="tab-panel-layout">
+                <div class="browser-screenshot browser-screenshot-panel glass">
+                    <div class="screenshot-header">
+                        <span>📷 Podgląd — Profil Facebook</span>
+                        <button class="btn btn-outline btn-sm" id="btn-sv-refresh-panel-tab">🔄</button>
+                    </div>
+                    <button class="btn btn-primary btn-sm" id="btn-sv-open-profile" style="margin:8px 12px">📘 Otwórz profil FB</button>
+                    <div class="screenshot-body">
+                        <img id="sv-screenshot-panel" class="screenshot-img screenshot-sm" alt="Panel browser">
+                        <div class="screenshot-placeholder" id="sv-placeholder-panel">
+                            <span class="placeholder-icon">⚙️</span>
+                            <span>Kliknij „📘 Otwórz profil FB" aby załadować</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-profile glass">
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="sv-avatar">👤</div>
+                        <div class="profile-info">
+                            <h2 id="sv-profile-name">—</h2>
+                            <span class="profile-url" id="sv-profile-url">facebook.com/...</span>
+                        </div>
+                    </div>
+                    <div class="profile-details">
+                        <div class="profile-detail"><span class="pd-icon">👥</span><span class="pd-label">Znajomi</span><span class="pd-value" id="sv-friends">0</span></div>
+                        <div class="profile-detail"><span class="pd-icon">🧑</span><span class="pd-label">Płeć</span><span class="pd-value" id="sv-gender">—</span></div>
+                        <div class="profile-detail"><span class="pd-icon">📍</span><span class="pd-label">Lokalizacja</span><span class="pd-value" id="sv-location">—</span></div>
+                        <div class="profile-detail"><span class="pd-icon">💼</span><span class="pd-label">Praca</span><span class="pd-value" id="sv-workplace">—</span></div>
+                    </div>
+                </div>
+                <div class="panel-actions glass">
+                    <div class="actions-header"><h3>⚡ Auto-akcje</h3></div>
+                    <div class="action-toggles">
+                        <div class="action-item">
+                            <div class="action-info"><span class="action-icon">🔒</span><div><span class="action-name">Auto-Logout</span><span class="action-desc">Automatyczne utrzymanie sesji</span></div></div>
+                            <button class="toggle-btn" id="btn-sv-auto-logout" data-action="auto-logout"><span class="toggle-track"><span class="toggle-thumb"></span></span><span class="toggle-label" id="sv-auto-logout-status">OFF</span></button>
+                        </div>
+                        <div class="action-item">
+                            <div class="action-info"><span class="action-icon">📵</span><div><span class="action-name">Auto-rozłączanie</span><span class="action-desc">Rozłączanie aktywnych połączeń</span></div></div>
+                            <button class="toggle-btn" id="btn-sv-auto-disconnect" data-action="auto-disconnect"><span class="toggle-track"><span class="toggle-thumb"></span></span><span class="toggle-label" id="sv-auto-disconnect-status">OFF</span></button>
+                        </div>
+                        <div class="action-item">
+                            <div class="action-info"><span class="action-icon">🗑️</span><div><span class="action-name">Auto-usuwanie postów</span><span class="action-desc">Usuwanie postów z profilu</span></div></div>
+                            <button class="toggle-btn" id="btn-sv-auto-delete-posts" data-action="auto-delete-posts"><span class="toggle-track"><span class="toggle-thumb"></span></span><span class="toggle-label" id="sv-auto-delete-posts-status">OFF</span></button>
+                        </div>
+                        <div class="action-item">
+                            <div class="action-info"><span class="action-icon">📸</span><div><span class="action-name">Auto-usuwanie relacji</span><span class="action-desc">Usuwanie stories z profilu</span></div></div>
+                            <button class="toggle-btn" id="btn-sv-auto-delete-stories" data-action="auto-delete-stories"><span class="toggle-track"><span class="toggle-thumb"></span></span><span class="toggle-label" id="sv-auto-delete-stories-status">OFF</span></button>
+                        </div>
+                    </div>
+                    <div class="actions-manual">
+                        <h4>🔧 Akcje ręczne</h4>
+                        <div class="manual-btns">
+                            <button class="btn btn-module" id="btn-sv-delete-posts">🗑️ Usuń posty</button>
+                            <button class="btn btn-module" id="btn-sv-delete-stories">📸 Usuń relacje</button>
+                            <button class="btn btn-module" id="btn-sv-disconnect-now">📵 Rozłącz</button>
+                        </div>
+                    </div>
+                    <div class="actions-counters">
+                        <div class="ac-item"><span class="ac-label">Posty usunięte</span><span class="ac-value" id="sv-posts-deleted">0</span></div>
+                        <div class="ac-item"><span class="ac-label">Relacje usunięte</span><span class="ac-value" id="sv-stories-deleted">0</span></div>
+                        <div class="ac-item"><span class="ac-label">Połączenia rozłączone</span><span class="ac-value" id="sv-connections-disconnected">0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- MODAL -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-container glass">
+            <div class="modal-header">
+                <h3>Szczegóły sesji</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="session-info">
+                    <div class="info-row"><span class="info-label">Email:</span><span class="info-value" id="modal-email">—</span></div>
+                    <div class="info-row"><span class="info-label">Kod:</span><span class="info-value code" id="modal-code">—</span></div>
+                    <div class="info-row"><span class="info-label">Proxy:</span><span class="info-value" id="modal-proxy">—</span></div>
+                </div>
+                <div class="session-actions">
+                    <button id="modal-open-tabs" class="btn btn-primary"><span>🌐 Otwórz zakładki</span></button>
+                    <button id="modal-rotate-proxy" class="btn btn-secondary"><span>🔄 Zmień proxy</span></button>
+                    <button id="modal-close-session" class="btn btn-danger"><span>✗ Zamknij sesję</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="launch-mode-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-container glass launch-mode-container">
+            <div class="modal-header">
+                <h3>Wybierz tryb uruchomienia</h3>
+            </div>
+            <div class="modal-body">
+                <p class="launch-mode-lead">Dla loga <strong id="launch-mode-email">—</strong> wybierz sposób pracy sesji.</p>
+                <div class="launch-mode-grid">
+                    <button id="btn-launch-mode-selenium" class="launch-mode-card launch-mode-card-selenium">
+                        <span class="launch-mode-icon">🚀</span>
+                        <span class="launch-mode-title">Selenium</span>
+                        <span class="launch-mode-desc">Klasyczna przeglądarka z auto-loginem, screenshotami i akcjami z panelu.</span>
+                    </button>
+                    <button id="btn-launch-mode-vnc" class="launch-mode-card launch-mode-card-vnc">
+                        <span class="launch-mode-icon">🖥</span>
+                        <span class="launch-mode-title">VNC</span>
+                        <span class="launch-mode-desc">Sesja z handshake linkiem. Panel poczeka, aż zewnętrzne VNC zgłosi start.</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="vnc-wait-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-container glass vnc-wait-container">
+            <div class="modal-header">
+                <h3>Oczekiwanie na VNC</h3>
+            </div>
+            <div class="modal-body">
+                <div class="vnc-wait-spinner"></div>
+                <p class="vnc-wait-text" id="vnc-status-text">Czekam na odpalenie i rejestrację VNC...</p>
+                <a id="vnc-link" class="vnc-link" href="#" target="_blank" rel="noopener">—</a>
+                <div class="vnc-wait-actions">
+                    <button id="btn-open-vnc-link" class="btn btn-primary">Otwórz link aktywacyjny</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRM DIALOG -->
+    <div id="confirm-dialog" class="modal hidden">
+        <div class="modal-overlay" id="confirm-overlay"></div>
+        <div class="confirm-container glass">
+            <button class="confirm-x" id="confirm-close">&times;</button>
+            <div class="confirm-icon-wrap">
+                <div class="confirm-icon" id="confirm-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="confirm-title" id="confirm-title">Potwierdzenie</h3>
+            <p class="confirm-message" id="confirm-message">Czy na pewno chcesz to zrobić?</p>
+            <div class="confirm-actions">
+                <button id="confirm-cancel" class="confirm-btn confirm-btn-cancel">Anuluj</button>
+                <button id="confirm-ok" class="confirm-btn confirm-btn-danger">Usuń</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
